@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+                xmlns:of="http://omnifaces.org/functions"
+                template="/WEB-INF/common/template.xhtml">
+    <ui:define name="content">
+
+        <h:form id="frmPedido">
+            <p:growl id="growl" showDetail="false" sticky="false" life="5000" />
+
+
+            <h1 style="text-align: center">Capturar Pedido</h1>
+            <p:panelGrid columns="2"  
+                         columnClasses="ui-g-6" 
+                         layout="grid" 
+                         styleClass="ui-panelgrid-blank form-group form-elements" 
+                         style="border:0px none; background-color:transparent;">
+
+                <p:outputLabel value="Fecha" for="fecha"/>
+                <p:datePicker id="fecha"
+                            value="#{nuevoPedidoController.pedido.fecha}"
+                            pattern="dd/MM/yyYY"
+                            showIcon="true"/>
+                <p:outputLabel value="Cliente" for="cliente"/>
+                <p:selectOneMenu id="cliente" 
+                                 value="#{nuevoPedidoController.pedido.idcliente}"
+                                 converter="#{clienteConverter}">
+                    <f:selectItems value="#{nuevoPedidoController.clientes}" 
+                                   var="cliente" 
+                                   itemLabel="#{cliente.nombre}"
+                                   itemValue="#{cliente}"/>
+                </p:selectOneMenu>
+                <p:outputLabel value="Comentarios" for="comentarios"/>
+                <p:inputTextarea id="comentarios"
+                                 value="#{nuevoPedidoController.pedido.comentarios}"
+                                 cols="40"
+                                 rows="3"
+                                 placeholder="Comentarios del Pedido (opcional)"
+                                 maxlength="250"/>
+                <p:outputLabel value="Total" for="total"/>
+                <p:outputLabel id="total"
+                                 value="#{nuevoPedidoController.pedido.total}"/>
+            </p:panelGrid>
+
+            <p:panelGrid columns="5" style="width: 100%">
+                <p:outputLabel value="Cantidad" for="cantidad"/>
+                <p:spinner id="cantidad" value="#{nuevoPedidoController.cantidad}" min="0" max="100" />
+                <p:outputLabel value="Producto" for="producto"/>
+                <p:selectOneMenu id="producto" 
+                                 value="#{nuevoPedidoController.producto}"
+                                 converter="#{productoConverter}">
+                    <f:selectItems value="#{nuevoPedidoController.productos}" 
+                                   var="producto" 
+                                   itemLabel="#{producto.nombreProducto}"
+                                   itemValue="#{producto}"/>
+                </p:selectOneMenu>
+                <p:commandButton value="Agregar Producto" 
+                                 actionListener="#{nuevoPedidoController.onAgregaProducto}"
+                                 update="frmPedido:total,frmPedido:fecha,frmPedido:comentarios,frmPedido:lista,cantidad"/> 
+            </p:panelGrid>
+
+            <p:dataTable id="lista" var="productoPedido" value="#{nuevoPedidoController.pedido.productosPedidoList}">
+                <f:facet name="header">
+                    #{nuevoPedidoController.pedido.productosPedidoList.size()} Productos en el Pedido
+                </f:facet>
+                <p:column headerText="Cantidad">
+                    <h:outputText value="#{productoPedido.cantidad}" />
+                </p:column>
+
+                <p:column headerText="Nombre Producto">
+                    <h:outputText value="#{productoPedido.idproducto.nombreProducto}" />
+                </p:column>
+
+                <p:column headerText="Precio" style="text-align: right">
+                    <h:outputText value="#{productoPedido.precio}" >
+                        <f:convertNumber pattern="#,##0.00" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Importe" style="text-align: right">
+                    <h:outputText value="#{productoPedido.importe}" >
+                        <f:convertNumber pattern="#,##0.00" />
+                    </h:outputText>
+                </p:column>
+
+
+            </p:dataTable>
+
+            <p:commandButton value="Guardar" id="btnGuardar" actionListener="#{nuevoPedidoController.onGuardar}"
+                             icon="fa fa-save" ajax="false" title="Guardar" 
+                             styleClass="rounded-btn"/>
+
+            <p:commandButton value="Salir" id="btnNuevo" action="#{nuevoPedidoController.onSalir()}"
+                             icon="fa fa-arrow-left" ajax="false" title="Regresar" immediate="true"
+                             styleClass="rounded-btn"/>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
